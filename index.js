@@ -1,39 +1,39 @@
 require('dotenv').config()
-const { response } = require('express')
+// const { response } = require('express')
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
-const person = require('./models/person')
 const Person = require('./models/person')
 
-morgan.token('body', (req, res) => JSON.stringify(req.body))
+morgan.token('body', (req) => JSON.stringify(req.body))
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body' ))
 app.use(express.json())
 app.use(express.static('build'))
 
 
-let persons = [
-    { 
-      "id": 1,
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": 2,
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": 3,
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": 4,
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    }
+/*let persons = [
+  {
+    'id': 1,
+    'name': 'Arto Hellas',
+    'number': '040-123456'
+  },
+  {
+    'id': 2,
+    'name': 'Ada Lovelace',
+    'number': '39-44-5323523'
+  },
+  {
+    'id': 3,
+    'name': 'Dan Abramov',
+    'number': '12-43-234345'
+  },
+  {
+    'id': 4,
+    'name': 'Mary Poppendieck',
+    'number': '39-23-6423122'
+  }
 ]
+*/
 
 app.get('/api/persons', (req, res) => {
   Person.find({}).then(persons => {
@@ -42,12 +42,12 @@ app.get('/api/persons', (req, res) => {
 })
 
 app.get('/info', (req, res) => {
-    Person.find({}).then(persons => {
-      const date = new Date()
-      console.log(persons, "persons log", typeof persons, "typeof Persons")
-      res.send(`<p>Phonebook has info for ${persons.length} people</p> <p>${date}</p>`)
-    })
-     
+  Person.find({}).then(persons => {
+    const date = new Date()
+    console.log(persons, 'persons log', typeof persons, 'typeof Persons')
+    res.send(`<p>Phonebook has info for ${persons.length} people</p> <p>${date}</p>`)
+  })
+
 })
 
 app.get('/api/persons/:id', (req, res, next) => {
@@ -61,52 +61,52 @@ app.get('/api/persons/:id', (req, res, next) => {
         res.json(person)
       } else {
         res.status(404).end()
-      } 
+      }
     })
     .catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (req, res, next) => {
-    // const id = Number(req.params.id)
-    // persons = persons.filter(person => person.id !== id)
+  // const id = Number(req.params.id)
+  // persons = persons.filter(person => person.id !== id)
 
-    Person.findByIdAndRemove(req.params.id)
-      .then(result => {
-        res.status(204).end()
-      })
-      .catch(error => next(error))
+  Person.findByIdAndRemove(req.params.id)
+    .then(res => {
+      res.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
 app.post('/api/persons', (req, res, next) => {
 
-      if (!req.body.name) {
-        return res.status(400).json({ 
-        error: 'name missing' 
-       })
-      }
-
-      if (!req.body.number){
-        return res.status(400).json({ 
-          error: 'number missing' 
-         })
-      }
-
-      // if (persons.find(person => person.name === req.body.name)) {
-      //   return res.status(400).json({ 
-      //     error: 'name already exist on database' 
-      //    })
-      // }
-
-    const person = new Person({
-        name: req.body.name,
-        number: req.body.number
+  if (!req.body.name) {
+    return res.status(400).json({
+      error: 'name missing'
     })
+  }
 
-    person.save()
-      .then(savedPerson => {
+  if (!req.body.number){
+    return res.status(400).json({
+      error: 'number missing'
+    })
+  }
+
+  // if (persons.find(person => person.name === req.body.name)) {
+  //   return res.status(400).json({
+  //     error: 'name already exist on database'
+  //    })
+  // }
+
+  const person = new Person({
+    name: req.body.name,
+    number: req.body.number
+  })
+
+  person.save()
+    .then(savedPerson => {
       res.json(savedPerson)
     })
-      .catch(error => next(error))
+    .catch(error => next(error))
     // persons = persons.concat(person)
     // res.json(person)
 })
@@ -117,7 +117,7 @@ app.put('/api/persons/:id', (req, res, next) => {
     number: req.body.number
   }
 
-  Person.findByIdAndUpdate(req.params.id, person, {runValidators: true, new: true })
+  Person.findByIdAndUpdate(req.params.id, person, { runValidators: true, new: true })
     .then(updatedPerson => {
       res.json(updatedPerson)
     })
