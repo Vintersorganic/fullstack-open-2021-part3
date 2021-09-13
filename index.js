@@ -71,7 +71,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
   // persons = persons.filter(person => person.id !== id)
 
   Person.findByIdAndRemove(req.params.id)
-    .then(res => {
+    .then( () => {
       res.status(204).end()
     })
     .catch(error => next(error))
